@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>QA TC 정리기</title>
+<link rel="icon" type="image/png" href="favicon.png"/>
+<link rel="preconnect" href="https://cdn.jsdelivr.net"/>
+<link rel="stylesheet" as="style" crossorigin
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.min.css"/>
+<style>
+/* ─── RESET ───────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Pretendard',-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;
+  line-height:1.6;-webkit-font-smoothing:antialiased;
+  transition:background .3s,color .3s;
+}
+
+/* ─── LIGHT MODE ──────────────────────────────────── */
+:root,[data-theme="light"]{
+  --bg:#eef2ff;
+  --surface:#ffffff;
+  --surface2:#f8faff;
+  --surface3:#f1f5fe;
+  --border:rgba(100,116,139,.13);
+  --border2:rgba(100,116,139,.24);
+  --text:#0f172a;
+  --text2:#334155;
+  --muted:#64748b;
+  --muted2:#94a3b8;
+  --card-bg:rgba(255,255,255,.88);
+  --card-border:rgba(255,255,255,.85);
+  --card-head-bg:rgba(248,250,255,.9);
+  --header-bg:rgba(255,255,255,.78);
+  --header-border:rgba(255,255,255,.88);
+  --textarea-bg:#ffffff;
+  --note-bg:rgba(245,158,11,.07);
+  --note-border:rgba(245,158,11,.22);
+  --note-color:#92400e;
+  --guide-bg:#f1f5fe;
+  --json-bg:#0f172a;
+  --json-color:#e2e8f0;
+  --toast-bg:rgba(15,23,42,.93);
+  --body-grad1:rgba(99,102,241,.14);
+  --body-grad2:rgba(14,165,233,.11);
+  --body-base:linear-gradient(175deg,#eef2ff 0%,#f0f9ff 55%,#f8faff 100%);
+  --shadow-xs:0 1px 3px rgba(15,23,42,.05);
+  --shadow-sm:0 2px 8px rgba(15,23,42,.07);
+  --shadow:0 4px 20px rgba(15,23,42,.08),0 1px 4px rgba(15,23,42,.04);
+  --shadow-lg:0 12px 40px rgba(15,23,42,.12),0 4px 12px rgba(15,23,42,.05);
+  --kbd-bg:#f1f5fe;
+  --kbd-shadow:0 2px 0 rgba(0,0,0,.09);
+  --field-head-bg:#f1f5fe;
+  --tc-head-bg:linear-gradient(90deg,rgba(248,250,255,.97),rgba(243,246,255,.97));
+  --tc-foot-bg:rgba(248,250,255,.55);
+  --result-tools-bg:rgba(248,250,255,.75);
+}
+
+/* ─── DARK MODE ───────────────────────────────────── */
+[data-theme="dark"]{
+  --bg:#1a1f2e;
+  --surface:#242b3d;
+  --surface2:#2c3550;
+  --surface3:#333e5c;
+  --border:#4a5680;
+  --border2:#5c6a96;
+  --text:#f0f4ff;
+  --text2:#d8e0f5;
+  --muted:#a0aece;
+  --muted2:#6878a8;
+  --card-bg:#242b3d;
+  --card-border:#4a5680;
+  --card-head-bg:#1e2438;
+  --header-bg:#242b3d;
+  --header-border:#4a5680;
+  --textarea-bg:#1a1f2e;
+  --note-bg:rgba(245,158,11,.15);
+  --note-border:rgba(245,158,11,.5);
+  --note-color:#f5c452;
+  --guide-bg:#333e5c;
+  --json-bg:#12151e;
+  --json-color:#d8e0f5;
+  --toast-bg:rgba(225,232,240,.97);
+  --body-grad1:rgba(99,102,241,.15);
+  --body-grad2:rgba(14,165,233,.1);
+  --body-base:linear-gradient(175deg,#1a1f2e 0%,#1a1f2e 100%);
+  --shadow-xs:0 1px 4px rgba(0,0,0,.5);
+  --shadow-sm:0 2px 10px rgba(0,0,0,.55);
+  --shadow:0 4px 24px rgba(0,0,0,.6),0 1px 4px rgba(0,0,0,.4);
+  --shadow-lg:0 12px 44px rgba(0,0,0,.7),0 4px 14px rgba(0,0,0,.5);
+  --kbd-bg:#333e5c;
+  --kbd-shadow:0 2px 0 rgba(0,0,0,.5);
+  --field-head-bg:#1e2438;
+  --tc-head-bg:#1e2438;
+  --tc-foot-bg:#1e2438;
+  --result-tools-bg:#1e2438;
+}
+
+/* ─── BG DECORATION ───────────────────────────────── */
+body::before{
+  content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 45% at 15% -5%,var(--body-grad1) 0%,transparent 60%),
+    radial-gradient(ellipse 55% 40% at 85% 105%,var(--body-grad2) 0%,transparent 60%),
+    var(--body-base);
+  transition:background .3s;
+}
+
+/* ─── LAYOUT ──────────────────────────────────────── */
+.wrap{max-width:1220px;margin:0 auto;padding:32px 20px 80px}
+.hidden{display:none!important}
+
+/* ─── HEADER ──────────────────────────────────────── */
+.header{
+  position:relative;overflow:hidden;
+  text-align:center;margin-bottom:28px;
+  padding:44px 28px 38px;
+  background:var(--header-bg);
+  backdrop-filter:blur(24px);
+  border:1px solid var(--header-border);
+  border-radius:28px;
+  box-shadow:var(--shadow-lg),0 0 0 1px rgba(79,70,229,.05);
+  transition:background .3s,border-color .3s,box-shadow .3s;
+}
+.header::before{
+  content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);
+  width:700px;height:300px;
+  background:radial-gradient(ellipse,rgba(79,70,229,.09) 0%,transparent 65%);
+  pointer-events:none;
+}
+.header-logo{
+  width:68px;height:68px;border-radius:18px;
+  margin:0 auto 16px;display:block;
+  box-shadow:0 10px 28px rgba(79,70,229,.28);
+  transition:transform .3s;
+}
+.header-logo:hover{transform:scale(1.05) rotate(-2deg)}
+.header-title{
+  font-size:34px;font-weight:900;letter-spacing:-1.2px;
+  background:linear-gradient(135deg,#4338ca 0%,#6366f1 50%,#0ea5e9 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:10px;cursor:pointer;display:inline-block;
+  transition:opacity .2s;user-select:none;
+}
+.header-title:hover{opacity:.75}
+.header-sub{
+  color:var(--muted);font-size:14px;font-weight:500;
+  max-width:500px;margin:0 auto 22px;line-height:1.65;
+  transition:color .3s;
+}
+.kbd-row{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;color:var(--muted2);transition:color .3s}
+kbd{
+  background:var(--kbd-bg);border:1px solid var(--border2);
+  border-radius:6px;padding:3px 8px;font-size:11px;font-weight:800;
+  font-family:ui-monospace,monospace;color:var(--text2);
+  box-shadow:var(--kbd-shadow);transition:background .3s,color .3s;
+}
+
+/* Theme toggle */
+.theme-btn{
+  position:absolute;top:18px;right:18px;
+  width:38px;height:38px;border-radius:50%;
+  border:1.5px solid var(--border2);
+  background:var(--surface2);
+  cursor:pointer;font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .22s;box-shadow:var(--shadow-xs);
+  color:var(--text2);
+}
+.theme-btn:hover{transform:scale(1.1);box-shadow:var(--shadow-sm)}
+
+/* ─── SECTIONS ────────────────────────────────────── */
+.sections{display:flex;flex-direction:column;gap:20px}
+
+/* ─── CARD ────────────────────────────────────────── */
+.card{
+  background:var(--card-bg);backdrop-filter:blur(12px);
+  border:1px solid var(--card-border);
+  border-radius:20px;box-shadow:var(--shadow);
+  overflow:hidden;transition:box-shadow .25s,background .3s,border-color .3s;
+}
+.card:hover{box-shadow:var(--shadow-lg)}
+
+/* card-head: icon + 제목을 한 그룹으로 중앙 배치, 뱃지 오른쪽 절대 */
+.card-head{
+  display:flex;align-items:center;justify-content:center;
+  padding:15px 22px;border-bottom:1px solid var(--border);
+  background:var(--card-head-bg);
+  position:relative;
+  transition:background .3s,border-color .3s;
+}
+.card-head-icon{
+  width:38px;height:38px;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  background:var(--grad-primary);
+  box-shadow:0 5px 14px rgba(79,70,229,.28);
+  flex-shrink:0;
+  margin-right:10px;
+}
+.card-head h2{
+  font-size:15px;font-weight:800;color:var(--text);letter-spacing:-.3px;
+  transition:color .3s;
+}
+.card-head-right{
+  position:absolute;right:22px;
+  display:flex;align-items:center;gap:8px;
+}
+.card-body{padding:22px;transition:background .3s}
+
+/* accent gradients */
+:root{
+  --grad-primary:linear-gradient(135deg,#4f46e5 0%,#0ea5e9 100%);
+  --grad-green:linear-gradient(135deg,#10b981 0%,#059669 100%);
+  --grad-success:linear-gradient(135deg,#10b981 0%,#059669 100%);
+  --r:20px;--r-sm:13px;--r-xs:9px;
+}
+
+/* ─── TEXTAREA ────────────────────────────────────── */
+.textarea-wrap{position:relative;margin-bottom:14px}
+.input-textarea{
+  width:100%;min-height:260px;resize:vertical;
+  border:2px solid var(--border2);border-radius:14px;
+  padding:16px 16px 36px;
+  font:13.5px/1.7 'Pretendard',-apple-system,sans-serif;
+  color:var(--text);background:var(--textarea-bg);outline:none;
+  transition:border-color .2s,box-shadow .2s,background .3s,color .3s;display:block;
+}
+.input-textarea::placeholder{color:var(--muted2);font-size:13px;text-align:center}
+.input-textarea.centered{text-align:center}
+.input-textarea:focus{border-color:#4f46e5;box-shadow:0 0 0 4px rgba(79,70,229,.1)}
+.char-count{
+  position:absolute;right:12px;bottom:10px;
+  font-size:11px;color:var(--muted2);font-weight:600;letter-spacing:.2px;
+  background:var(--surface2);padding:2px 7px;border-radius:6px;
+  pointer-events:none;transition:background .3s,color .3s;
+}
+
+/* ─── BUTTON ROW ──────────────────────────────────── */
+.btn-row{
+  display:flex;flex-wrap:wrap;gap:10px;
+  align-items:center;justify-content:center;
+}
+
+/* ─── BUTTONS ─────────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  border:1.5px solid var(--border2);background:var(--surface);
+  border-radius:var(--r-sm);padding:10px 18px;
+  font:700 13.5px 'Pretendard',sans-serif;
+  color:var(--text2);cursor:pointer;transition:all .18s;
+  white-space:nowrap;user-select:none;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(79,70,229,.15);border-color:rgba(100,116,139,.35)}
+.btn:active{transform:translateY(0)}
+
+.btn-primary{
+  background:var(--grad-primary);border:0;color:#fff;
+  box-shadow:0 5px 18px rgba(79,70,229,.35);
+  padding:12px 28px;font-size:14px;
+}
+.btn-primary:hover{box-shadow:0 9px 28px rgba(79,70,229,.45)}
+.btn-primary.loading{pointer-events:none;opacity:.82}
+
+.btn-danger{background:rgba(239,68,68,.09);border-color:rgba(239,68,68,.22);color:#ef4444}
+.btn-danger:hover{background:rgba(239,68,68,.15)}
+.btn-success{background:rgba(16,185,129,.09);border-color:rgba(16,185,129,.22);color:#059669}
+.btn-success:hover{background:rgba(16,185,129,.15)}
+.btn-blue{background:rgba(37,99,235,.09);border-color:rgba(37,99,235,.22);color:#2563eb}
+.btn-blue:hover{background:rgba(37,99,235,.15)}
+.btn-mono{
+  background:var(--surface3);border-color:var(--border2);
+  color:var(--muted);font-family:ui-monospace,monospace;font-size:12px;
+}
+.btn-mono:hover{background:var(--surface2)}
+.btn-sm{padding:7px 13px;font-size:12px;border-radius:9px}
+
+/* Spinner */
+.spinner{
+  width:15px;height:15px;
+  border:2px solid rgba(255,255,255,.3);border-top-color:#fff;
+  border-radius:50%;animation:spin .65s linear infinite;display:none;
+}
+.btn-primary.loading .spinner{display:block}
+.btn-primary.loading .btn-label{display:none}
+
+/* ─── NOTE ────────────────────────────────────────── */
+.note{
+  padding:12px 15px;margin-top:14px;
+  border:1px solid var(--note-border);
+  background:var(--note-bg);
+  border-radius:9px;
+  color:var(--note-color);font-size:13px;line-height:1.55;
+  transition:background .3s,color .3s,border-color .3s;
+}
+
+/* ─── GUIDE GRID ──────────────────────────────────── */
+.guide-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.guide-card{
+  background:var(--guide-bg);border:1px solid var(--border);
+  border-radius:14px;padding:18px 14px;text-align:center;
+  transition:all .22s;
+}
+.guide-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-sm);border-color:rgba(79,70,229,.22)}
+.guide-icon{font-size:24px;margin-bottom:9px;display:block}
+.guide-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:5px;transition:color .3s}
+.guide-desc{font-size:12px;color:var(--muted);line-height:1.55;transition:color .3s}
+
+/* ─── BADGES ──────────────────────────────────────── */
+.badge{
+  display:inline-flex;align-items:center;
+  font-size:12px;font-weight:700;border-radius:999px;
+  padding:5px 12px;border:1px solid var(--border2);
+  background:var(--surface);color:var(--muted);
+  transition:background .3s,color .3s;
+}
+.badge-primary{
+  background:var(--grad-primary);color:#fff;border:0;
+  box-shadow:0 4px 12px rgba(79,70,229,.28);
+}
+
+/* ─── RESULT TOOLS ────────────────────────────────── */
+.result-tools{
+  display:flex;flex-wrap:wrap;gap:10px;
+  align-items:center;justify-content:center;
+  padding:14px 22px;border-bottom:1px solid var(--border);
+  background:var(--result-tools-bg);
+  transition:background .3s,border-color .3s;
+}
+
+/* ─── RESULT LIST ─────────────────────────────────── */
+.result-list{display:flex;flex-direction:column;gap:16px;padding:20px 22px}
+
+/* ─── TC ITEM ─────────────────────────────────────── */
+.tc-item{
+  border:1px solid var(--border);border-radius:16px;
+  background:var(--surface);box-shadow:var(--shadow-xs);
+  overflow:hidden;
+  transition:box-shadow .22s,border-color .22s,transform .22s,background .3s;
+  animation:fadeUp .3s ease both;
+}
+.tc-item:hover{box-shadow:var(--shadow);border-color:rgba(79,70,229,.18);transform:translateY(-1px)}
+.tc-item-head{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:13px 18px;
+  background:var(--tc-head-bg);
+  border-bottom:1px solid var(--border);
+  transition:background .3s,border-color .3s;
+}
+.issue-id{
+  display:inline-flex;align-items:center;
+  background:var(--grad-primary);color:#fff;
+  border-radius:999px;padding:6px 15px;
+  font-size:12.5px;font-weight:900;letter-spacing:.3px;
+  box-shadow:0 4px 12px rgba(79,70,229,.25);
+  white-space:nowrap;flex-shrink:0;
+}
+.tc-summary{
+  flex:1;font-size:13.5px;font-weight:700;
+  color:var(--text2);line-height:1.4;word-break:keep-all;
+  transition:color .3s;
+}
+.type-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  border-radius:999px;padding:4px 11px;
+  font-size:11px;font-weight:700;flex-shrink:0;
+  border:1px solid transparent;
+}
+.type-reward  {background:rgba(245,158,11,.12);color:#b45309;border-color:rgba(245,158,11,.25)}
+.type-skill   {background:rgba(139,92,246,.12);color:#7c3aed;border-color:rgba(139,92,246,.25)}
+.type-tooltip {background:rgba(37,99,235,.1);color:#1d4ed8;border-color:rgba(37,99,235,.2)}
+.type-movement{background:rgba(16,185,129,.1);color:#047857;border-color:rgba(16,185,129,.22)}
+.type-object  {background:rgba(249,115,22,.1);color:#c2410c;border-color:rgba(249,115,22,.22)}
+.type-effect  {background:rgba(236,72,153,.1);color:#be185d;border-color:rgba(236,72,153,.22)}
+.type-create  {background:rgba(14,165,233,.1);color:#0369a1;border-color:rgba(14,165,233,.2)}
+.type-locale  {background:rgba(79,70,229,.1);color:#4338ca;border-color:rgba(79,70,229,.2)}
+.type-ui      {background:rgba(20,184,166,.1);color:#0f766e;border-color:rgba(20,184,166,.22)}
+.type-general {background:rgba(100,116,139,.09);color:var(--muted);border-color:var(--border2)}
+
+/* ─── TC BODY ─────────────────────────────────────── */
+.tc-item-body{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.tc-field{border-right:1px solid var(--border);display:flex;flex-direction:column;transition:border-color .3s}
+.tc-field:last-child{border-right:none}
+.tc-field-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 14px;
+  background:var(--field-head-bg);border-bottom:1px solid var(--border);
+  transition:background .3s,border-color .3s;
+}
+.tc-field-title{
+  font-size:11px;font-weight:800;color:var(--muted);
+  letter-spacing:.5px;text-transform:uppercase;transition:color .3s;
+}
+.tc-field-copy{
+  border:none;background:transparent;cursor:pointer;
+  padding:3px;border-radius:5px;
+  color:var(--muted2);font-size:12px;line-height:1;
+  opacity:0;transition:opacity .15s,color .15s,background .15s;
+}
+.tc-field:hover .tc-field-copy{opacity:1}
+.tc-field-copy:hover{color:#4f46e5;background:rgba(79,70,229,.1)}
+.tc-field-body{
+  padding:13px 14px;
+  font-size:13px;color:var(--text2);
+  line-height:1.7;word-break:keep-all;
+  white-space:pre-wrap;flex:1;min-height:88px;
+  transition:color .3s;
+}
+
+/* ─── TC FOOTER ───────────────────────────────────── */
+.tc-item-foot{
+  display:flex;align-items:center;justify-content:center;
+  padding:9px 18px;
+  border-top:1px solid var(--border);
+  background:var(--tc-foot-bg);gap:8px;
+  transition:background .3s,border-color .3s;
+}
+
+/* ─── EMPTY STATE ─────────────────────────────────── */
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:60px 24px;gap:10px;text-align:center;
+}
+.empty-icon{font-size:52px}
+.empty-title{font-size:15px;font-weight:800;color:var(--muted);transition:color .3s}
+.empty-sub{font-size:13px;color:var(--muted2);line-height:1.65;transition:color .3s}
+
+/* ─── JSON VIEWER ─────────────────────────────────── */
+.json-viewer{
+  display:none;margin:4px 22px 22px;
+  background:var(--json-bg);border-radius:14px;overflow:hidden;
+  transition:background .3s;
+}
+.json-viewer.on{display:block}
+.json-viewer-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.07);
+}
+.json-viewer-head-label{font-size:12px;font-weight:700;color:#64748b;font-family:ui-monospace,monospace}
+.json-content{
+  max-height:340px;overflow:auto;padding:16px;
+  font:12px/1.75 ui-monospace,'SFMono-Regular',Consolas,monospace;
+  color:var(--json-color);white-space:pre-wrap;
+}
+.json-content::-webkit-scrollbar{width:6px;height:6px}
+.json-content::-webkit-scrollbar-thumb{background:#1e293b;border-radius:4px}
+
+/* ─── TOAST ───────────────────────────────────────── */
+.toast{
+  position:fixed;right:20px;bottom:24px;z-index:9999;
+  background:var(--toast-bg);backdrop-filter:blur(20px);
+  color:#fff;padding:13px 20px 13px 15px;
+  border-radius:15px;
+  box-shadow:0 20px 50px rgba(0,0,0,.22),0 4px 12px rgba(0,0,0,.14);
+  border:1px solid rgba(255,255,255,.09);
+  font-size:13.5px;font-weight:700;
+  display:flex;align-items:center;gap:10px;
+  opacity:0;transform:translateY(14px) scale(.95);
+  pointer-events:none;
+  transition:all .28s cubic-bezier(.34,1.56,.64,1),background .3s;
+  max-width:300px;
+}
+.toast.on{opacity:1;transform:translateY(0) scale(1)}
+[data-theme="dark"] .toast{color:#0f172a}
+.toast-icon{font-size:17px;flex-shrink:0}
+
+/* ─── ANIMATIONS ──────────────────────────────────── */
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* 다크 모드 박스 구분 강화 */
+[data-theme="dark"] .card{
+  border:1px solid #4a5680;
+  box-shadow:0 4px 24px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06);
+}
+[data-theme="dark"] .card:hover{ border-color:#5c6a96; }
+[data-theme="dark"] .tc-item{
+  border:1px solid #4a5680;
+  box-shadow:0 2px 10px rgba(0,0,0,.4);
+}
+[data-theme="dark"] .tc-item:hover{ border-color:#5c6a96; }
+[data-theme="dark"] .guide-card{
+  border:1px solid #4a5680;
+  background:#333e5c;
+  box-shadow:0 2px 8px rgba(0,0,0,.35);
+}
+[data-theme="dark"] .guide-card:hover{ border-color:#5c6a96; }
+[data-theme="dark"] .input-textarea{
+  border:2px solid #4a5680;
+  box-shadow:inset 0 2px 8px rgba(0,0,0,.3);
+}
+[data-theme="dark"] .input-textarea:focus{
+  border-color:#818cf8;
+  box-shadow:0 0 0 4px rgba(129,140,248,.2), inset 0 2px 8px rgba(0,0,0,.3);
+}
+[data-theme="dark"] .header{
+  border:1px solid #4a5680;
+  box-shadow:0 12px 40px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.06);
+}
+[data-theme="dark"] .tc-field{ border-right:1px solid #4a5680; }
+[data-theme="dark"] .tc-field:last-child{ border-right:none; }
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes headerIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+.header{animation:headerIn .5s ease both}
+
+/* ─── RESPONSIVE ──────────────────────────────────── */
+@media(max-width:800px){
+  .wrap{padding:14px 12px 60px}
+  .header{padding:30px 18px 26px;border-radius:22px}
+  .header-title{font-size:26px}
+  .guide-grid{grid-template-columns:1fr 1fr}
+  .tc-item-body{grid-template-columns:1fr}
+  .tc-field{border-right:none;border-bottom:1px solid var(--border)}
+  .tc-field:last-child{border-bottom:none}
+  .tc-item-head{gap:8px}
+  .card-body{padding:16px}
+  .card-head{padding:13px 16px}
+  .card-head-right{right:16px}
+}
+@media(max-width:480px){
+  .guide-grid{grid-template-columns:1fr}
+  .header-title{font-size:22px}
+  .header{padding:24px 14px 22px}
+  .btn-row{flex-direction:column;align-items:stretch}
+  .btn-row .btn{justify-content:center}
+  .result-tools{flex-direction:column;align-items:stretch}
+  .result-tools .btn{justify-content:center}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ─── HEADER ──────────────────────── -->
+  <header class="header">
+    <button class="theme-btn" id="themeBtn" title="테마 전환">🌙</button>
+    <img src="favicon.png" alt="QA TC 정리기" class="header-logo"
+      onerror="this.style.display='none'"/>
+    <div class="header-title" id="titleResetBtn" role="button" tabindex="0"
+      title="클릭하면 초기화됩니다">QA TC 정리기</div>
+    <div class="header-sub">
+      전체 일감 내용을 붙여넣으면 상세 설명 1/2, 기대결과를<br>
+      유형별로 자동 분석하여 정리합니다.
+    </div>
+    <div class="kbd-row">
+      <kbd>Ctrl</kbd>+<kbd>Enter</kbd>&nbsp;로 빠르게 분석
+    </div>
+  </header>
+
+  <div class="sections">
+
+    <!-- ─── INPUT CARD ─────────────────── -->
+    <section class="card">
+      <div class="card-head">
+        <div class="card-head-icon" style="background:var(--grad-primary)">📋</div>
+        <h2>일감 전체 내용 붙여넣기</h2>
+        <div class="card-head-right">
+          <span class="badge" id="charCountBadge">0자</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="textarea-wrap">
+          <textarea
+            class="input-textarea"
+            id="workInput"
+            placeholder="전체 원문을 그대로 붙여넣으세요.
+
+이슈 ID(예: QA-123)가 있으면 항목을 자동으로 분리합니다.
+여러 일감을 한 번에 붙여넣을 수 있습니다."
+          ></textarea>
+          <span class="char-count" id="charCountInner">0자</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="analyzeBtn" title="Ctrl+Enter">
+            <div class="spinner"></div>
+            <span class="btn-label">⚡ QA TC 정리 시작</span>
+          </button>
+          <button class="btn btn-danger" id="clearBtn">🧹 초기화</button>
+        </div>
+        <div class="note hidden" id="inputNote">
+          💡 이슈 ID(예: AA-123, QA-456) 기반으로 항목이 분리됩니다.
+          ID가 없는 경우 전체를 단일 일감으로 처리합니다.
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── GUIDE CARD ──────────────────── -->
+    <section class="card">
+      <div class="card-head">
+        <div class="card-head-icon" style="background:var(--grad-green)">🧭</div>
+        <h2>출력 기준</h2>
+      </div>
+      <div class="card-body">
+        <div class="guide-grid">
+          <div class="guide-card">
+            <span class="guide-icon">🔖</span>
+            <div class="guide-title">일감 ID</div>
+            <div class="guide-desc">원문에서 이슈 ID를 추출해 항목을 분리합니다.</div>
+          </div>
+          <div class="guide-card">
+            <span class="guide-icon">🔍</span>
+            <div class="guide-title">상세 설명 1</div>
+            <div class="guide-desc">유형별 검증 목적과 확인 포인트를 작성합니다.</div>
+          </div>
+          <div class="guide-card">
+            <span class="guide-icon">📝</span>
+            <div class="guide-title">상세 설명 2</div>
+            <div class="guide-desc">확인 흐름을 스텝 형식으로 구체화해 작성합니다.</div>
+          </div>
+          <div class="guide-card">
+            <span class="guide-icon">✅</span>
+            <div class="guide-title">기대결과</div>
+            <div class="guide-desc">수정 후 정상 상태를 QA 문장으로 기술합니다.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── RESULT CARD ─────────────────── -->
+    <section class="card" id="resultCard">
+      <div class="card-head">
+        <div class="card-head-icon" style="background:var(--grad-success)">✅</div>
+        <h2>정리 결과</h2>
+        <div class="card-head-right">
+          <span class="badge badge-primary" id="countBadge">0건</span>
+        </div>
+      </div>
+
+      <!-- Empty -->
+      <div id="emptyBox">
+        <div class="empty-state">
+          <div class="empty-icon">📄</div>
+          <div class="empty-title">아직 정리된 TC가 없습니다.</div>
+          <div class="empty-sub">전체 원문을 붙여넣고<br>QA TC 정리 시작 버튼을 눌러주세요.</div>
+        </div>
+      </div>
+
+      <!-- Result -->
+      <div id="resultBox" class="hidden">
+        <div class="result-tools">
+          <button class="btn btn-success" id="copyTsvBtn">📋 결과만 복사 (TSV)</button>
+          <button class="btn btn-blue" id="copyHeaderTsvBtn">📋 헤더 포함 복사</button>
+          <button class="btn btn-mono" id="jsonBtn">{·} JSON 보기</button>
+        </div>
+
+        <div class="result-list" id="resultBody"></div>
+
+        <div class="json-viewer" id="jsonViewer">
+          <div class="json-viewer-head">
+            <span class="json-viewer-head-label">📦 JSON 출력</span>
+            <button class="btn btn-mono btn-sm" id="copyJsonBtn">📋 복사</button>
+          </div>
+          <div class="json-content" id="rawJson"></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toastIcon">✓</span>
+  <span id="toastMsg">완료</span>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════
+   QA TC 정리기 v2.1
+   ══════════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+let tcRows = [];
+const headers = ["일감","상세 설명 1","상세 설명 2","기대결과"];
+
+const TYPE_LABELS = {
+  reward:"🏆 보상", skill:"⚡ 스킬", tooltip:"💬 툴팁",
+  movement:"🏃 이동/지형", object:"📦 오브젝트", effect:"✨ 이펙트",
+  create:"🔨 생성/제작", locale:"🌐 다국어", ui:"🖥 UI/UX", general:"📌 일반"
+};
+
+/* ── THEME TOGGLE ────────────────────────── */
+const root = document.documentElement;
+let isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+function applyTheme(dark){
+  isDark = dark;
+  root.setAttribute('data-theme', dark ? 'dark' : 'light');
+  $('themeBtn').textContent = dark ? '🌙' : '☀️';
+  $('themeBtn').title = dark ? '라이트 모드로 전환' : '다크 모드로 전환';
+  try{ localStorage.setItem('qa-theme', dark ? 'dark' : 'light'); }catch(e){}
+}
+(function initTheme(){
+  try{
+    const saved = localStorage.getItem('qa-theme');
+    if(saved) applyTheme(saved === 'dark');
+    else applyTheme(false); /* 기본값: 라이트 모드 */
+  }catch(e){ applyTheme(false); }
+})();
+$('themeBtn').addEventListener('click', () => applyTheme(!isDark));
+
+/* ── TEXT UTILS ──────────────────────────── */
+function normalizeText(t){
+  return (t||"").replace(/\r\n/g,"\n").replace(/\u00a0/g," ").replace(/[ \t]+\n/g,"\n").trim();
+}
+function cleanCell(v){
+  return (v||"").replace(/[\u200B-\u200D\uFEFF]/g,"")
+    .replace(/^[\-–—•*▶▷▪▫✅☑️\s]+/g,"")
+    .replace(/\s+/g," ").trim();
+}
+function unique(arr){
+  const s=new Set();
+  return arr.filter(v=>{const k=cleanCell(v);if(!k||s.has(k))return false;s.add(k);return true;});
+}
+function escapeHtml(v){
+  return String(v||"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]));
+}
+
+/* ── NOISE / META FILTERS ────────────────── */
+function looksLikeNoise(v){
+  const t=cleanCell(v);
+  if(!t) return true;
+  if(/^\d+차$/.test(t)) return true;
+  if(/^\d{1,3}%$/.test(t)) return true;
+  if(/^(완료|진행|대기|확인|미확인|PASS|FAIL|N\/A)$/i.test(t)) return true;
+  if(/^(일감|이슈|번호|상태|담당자|우선순위|설명|코멘트)$/i.test(t)) return true;
+  return false;
+}
+function isSectionHeadingLine(line){
+  const t=cleanCell(line);
+  return /^\[\s*[^\]]*(테스트\s*환경|Test\s*Environment|재현\s*빈도|Occurrence\s*Frequency|상세\s*내용|Detailed\s*Description|기대\s*결과|Expected\s*Result|재현\s*스텝|Step\s*&\s*Action)[^\]]*\]\s*$/i.test(t);
+}
+function isExcludedQaMetaLine(line){
+  const t=cleanCell(line);
+  if(!t) return true;
+  return /\[\s*[^\]]*(테스트\s*환경|Test\s*Environment|재현\s*빈도|Occurrence\s*Frequency)[^\]]*\]/i.test(t)
+    || /^(기기|Device|운영체제|Operating\s*System|빌드|Build|발생|Occurrence)(?:\s*\([^)]*\))?\s*[:：]/i.test(t)
+    || /^\d+\/\d+\s*\(?\d{1,3}%\)?$/i.test(t)
+    || /^발생\s*\(?Occurrence\)?/i.test(t)
+    || (/QA\s*\d+\.\d+/i.test(t) && /빌드|Build/i.test(t))
+    || (/Windows|Android|iOS|PC\s*$/i.test(t) && /^(기기|운영체제|빌드|Device|Operating|Build)/i.test(t));
+}
+function stripExcludedSections(raw){
+  let text=raw||"";
+  text=text.replace(
+    /\[\s*[^\]]*(테스트\s*환경|Test\s*Environment|재현\s*빈도|Occurrence\s*Frequency)[^\]]*\][\s\S]*?(?=(?:\n|\s)\s*\[[^\]]+\]|$)/gi,
+    "\n"
+  );
+  return text.split("\n").filter(l=>!isExcludedQaMetaLine(l)).join("\n").trim();
+}
+
+/* ── SENTENCE UTILS ──────────────────────── */
+function trimSentence(v,max=92){
+  const t=cleanCell(v).replace(/^관련\s*/,'');
+  return t.length>max ? t.slice(0,max-1).trim()+"…" : t;
+}
+function makeBaseTitle(title){
+  let t=cleanCell(title)
+    .replace(/\[\s*[^\]]*(상세\s*내용|Detailed\s*Description|기대\s*결과|Expected\s*Result|재현\s*스텝|Step\s*&\s*Action|테스트\s*환경|Test\s*Environment|재현\s*빈도|Occurrence\s*Frequency)[^\]]*\]/gi,"")
+    .replace(/^관련\s*/,'').trim();
+  if(!t || /테스트\s*환경|재현\s*빈도|Test\s*Environment|Occurrence\s*Frequency/i.test(t)) return "대상 일감";
+  return trimSentence(t,58);
+}
+function targetLabel(base,fallback="대상 항목"){
+  return (!base||base==="대상 일감") ? fallback : `${trimSentence(base,54)} 관련`;
+}
+function normalizePointSentence(v){
+  let t=cleanCell(v)
+    .replace(/^(확인\s*경로\/화면|확인\s*조건|언어\s*조건|UI\s*배율\s*조건)\s*[:：]\s*/i,"")
+    .replace(/^\d+\.\s*/g,"")
+    .replace(/[。．]+$/g,".").trim();
+  if(!t) return "";
+  t=trimSentence(t,126);
+  if(/[.!?다요함됨임음]$/.test(t)) return t;
+  if(/진입|클릭|선택|사용|착용|이동|변경|적용|출력|노출|확인|비교|반복/.test(t)) return `${t}합니다.`;
+  return `${t} 여부를 확인합니다.`;
+}
+
+/* ── ISSUE PARSING ───────────────────────── */
+function splitIssues(input){
+  const text=normalizeText(input);
+  const lines=text.split("\n").map(v=>v.trim()).filter(Boolean);
+  const issues=[]; let cur=null;
+  const issueRe=/\b[A-Z][A-Z0-9]{1,12}-\d+\b/;
+  for(const line of lines){
+    const m=line.match(issueRe);
+    if(m){
+      const id=m[0];
+      if(!cur||cur.id!==id){cur={id,lines:[line]};issues.push(cur);}
+      else cur.lines.push(line);
+    }else if(cur){cur.lines.push(line);}
+  }
+  if(!issues.length && text) issues.push({id:"수동-1",lines});
+  return issues;
+}
+function getCleanRaw(issue){return stripExcludedSections(issue.lines.join("\n"));}
+function findSection(raw,names){
+  const text=raw||"";
+  const esc=names.map(n=>n.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|');
+  const re=new RegExp('\\[\\s*[^\\]]*(?:'+esc+')[^\\]]*\\]([\\s\\S]*?)(?=(?:\\n|\\s)\\s*\\[[^\\]]+\\]|$)','i');
+  const m=text.match(re);
+  return m ? cleanCell(m[1]) : "";
+}
+function extractTitle(issue){
+  const cleaned=getCleanRaw(issue);
+  const detail=findSection(cleaned,["상세 내용","Detailed Description"]);
+  const expected=findSection(cleaned,["기대 결과","Expected Result"]);
+  const first=issue.lines.find(l=>l.includes(issue.id))||issue.lines[0]||"";
+  const splitByCell=first.includes("\t") ? first.split("\t") : first.split(/\s{2,}/);
+  let cells=splitByCell
+    .map(v=>cleanCell(v.replace(issue.id,"")))
+    .filter(v=>!looksLikeNoise(v)&&!isExcludedQaMetaLine(v)&&!isSectionHeadingLine(v))
+    .filter(v=>!/\[(테스트\s*환경|Test\s*Environment|재현\s*빈도|Occurrence\s*Frequency)\]/i.test(v))
+    .filter(v=>v.length>=4&&!/^https?:\/\//i.test(v));
+  const score=v=>{
+    let s=0;
+    if(/[가-힣]/.test(v)) s+=5;
+    if(/현상|수정|변경|오류|어색|불일치|노출|동작|발생|제거|확인|반영|침범|멈춤|지급|취소|상이|다름/.test(v)) s+=6;
+    if(/\[(상세|기대|재현|테스트|Test|Expected|Step|Occurrence)/i.test(v)) s-=20;
+    if(v.length>10&&v.length<90) s+=3;
+    if(/[>→]/.test(v)) s-=3;
+    return s;
+  };
+  if(cells.length) return cells.sort((a,b)=>score(b)-score(a))[0];
+  const pool=[detail,expected,...cleaned.split("\n")]
+    .map(l=>cleanCell(l.replace(issue.id,"")))
+    .filter(v=>v&&!looksLikeNoise(v)&&!isExcludedQaMetaLine(v)&&!isSectionHeadingLine(v))
+    .filter(v=>!/\[\s*[^\]]*(상세\s*내용|Detailed\s*Description|기대\s*결과|Expected\s*Result|재현\s*스텝|Step\s*&\s*Action)[^\]]*\]/i.test(v));
+  return trimSentence(pool.find(v=>v.length>=8&&v.length<120)||pool[0]||"대상 일감",65);
+}
+function getRaw(issue){return getCleanRaw(issue);}
+function has(raw,re){return re.test(raw);}
+
+/* ── TYPE DETECTION ──────────────────────── */
+function getType(raw){
+  if(has(raw,/보상|지급|수량|개수|획득|상자/)) return "reward";
+  if(has(raw,/스킬|쿨타임|발동|버프|디버프|타겟|대상/)) return "skill";
+  if(has(raw,/툴팁|문구|오탈자|텍스트|설명/)) return "tooltip";
+  if(has(raw,/이동|위치|좌표|끼임|멈춤|지형|경로/)) return "movement";
+  if(has(raw,/오브젝트|배치|제거/)) return "object";
+  if(has(raw,/이펙트|효과|날개|외형|모션|애니메이션/)) return "effect";
+  if(has(raw,/생성|제작|합성|강화|성공|대성공|결과 UI|결과창/)) return "create";
+  if(has(raw,/영문|영어|중국어|중문|일본어|일어|다국어|로컬라이징|번역/)) return "locale";
+  if(has(raw,/UI|UX|팝업|창|버튼|아이콘|영역|침범|겹침|해상도|배율|스크롤|화면|노출/)) return "ui";
+  return "general";
+}
+
+/* ── DETAIL 1 ─────────────────────────────── */
+function buildDetail1(title,raw){
+  const type=getType(raw+"\n"+title);
+  const base=makeBaseTitle(title);
+  switch(type){
+    case "reward":   return `${targetLabel(base,"대상 보상 항목")} 보상 UI, 결과 화면, 실제 획득 결과가 수정 기준과 일치하는지 확인합니다.`;
+    case "skill":    return `${targetLabel(base,"대상 스킬")} 사용/연계/취소 상황에서 발동 상태와 쿨타임 처리 정상 여부를 확인합니다.`;
+    case "tooltip":  return `${targetLabel(base)} 툴팁 및 안내 문구가 수정 기준에 맞게 노출되는지 확인합니다.`;
+    case "movement": return `${targetLabel(base,"지정 위치")}에서 캐릭터 이동 시 멈춤, 끼임, 비정상 이동이 발생하지 않는지 확인합니다.`;
+    case "object":   return `${targetLabel(base,"지정 지역")} 잘못 배치된 오브젝트가 남아있지 않은지 확인합니다.`;
+    case "effect":   return `${targetLabel(base,"대상 아이템/스킬")} 적용 시 이펙트 위치, 크기, 출력 타이밍이 자연스럽게 노출되는지 확인합니다.`;
+    case "create":   return `${targetLabel(base,"대상 아이템")} 생성/제작 시 결과 UI와 실제 처리 결과가 정상적으로 일치하는지 확인합니다.`;
+    case "locale":   return `${targetLabel(base,"대상 텍스트")} 언어별 텍스트가 지정된 UI 영역 안에서 잘림이나 겹침 없이 노출되는지 확인합니다.`;
+    case "ui":       return `${targetLabel(base,"대상 화면/팝업")} UI에서 텍스트, 버튼, 아이콘, 결과 영역이 정상 위치와 크기로 노출되는지 확인합니다.`;
+    default:         return `${base}에 기재된 수정/확인 요청 사항이 정상 반영되었는지 확인합니다.`;
+  }
+}
+
+/* ── DETAIL 2 ─────────────────────────────── */
+function extractDetailPoints(raw){
+  const clean=stripExcludedSections(raw);
+  const points=[];
+  const lines=clean.split("\n").map(cleanCell).filter(Boolean)
+    .filter(l=>!isExcludedQaMetaLine(l)&&!isSectionHeadingLine(l)&&!looksLikeNoise(l));
+  const langs=[...clean.matchAll(/한국어|영문|영어|중국어\s*간체|중국어\s*번체|일본어|일어|중문/g)].map(m=>m[0]);
+  const pcts=[...clean.matchAll(/\b(?:80|90|100|110|120|125|150)%\b/g)].map(m=>m[0]);
+  const pathLine=lines.find(l=>/[>→]/.test(l))||lines.find(l=>/인게임.*메뉴|환경\s*설정|캐릭터\s*생성|메인\s*화면|결과\s*화면|던전|지역|위치/.test(l));
+  if(pathLine){
+    const cp=trimSentence(pathLine.replace(/\s+/g," "),118);
+    points.push(`${cp} 경로에서 대상 항목을 확인합니다.`);
+  }
+  if(langs.length) points.push(`${unique(langs).join(", ")} 환경에서 텍스트 및 UI 노출 상태를 확인합니다.`);
+  if(pcts.length)  points.push(`UI 배율 ${unique(pcts).join(", ")} 적용 후 화면/팝업 크기와 위치를 확인합니다.`);
+  const important=lines.filter(l=>{
+    if(pathLine&&l===pathLine) return false;
+    if(/^\b[A-Z][A-Z0-9]{1,12}-\d+\b/.test(l)) return false;
+    return /스킬|아이템|클래스|탈것|언어|영문|중국어|일본어|한국어|모바일|스크린샷|주변|진입|클릭|선택|착용|사용|이동|결과\s*화면|보상|팝업|UI|배율|수량|개수|오브젝트|이펙트|툴팁|문구|영역|겹침|침범|쿨타임|발동|취소|반환/.test(l);
+  });
+  important.slice(0,3).forEach(v=>points.push(normalizePointSentence(v)));
+  return unique(points).filter(Boolean).slice(0,4);
+}
+function buildDetail2(title,raw){
+  const points=extractDetailPoints(raw);
+  if(!points.length) return "수정 전 문제가 발생하던 동일 상황에서 기능을 수행하고, 동일 현상이 다시 발생하지 않는지 확인합니다.";
+  if(points.length===1) return points[0];
+  return points.map((p,i)=>`${i+1}. ${normalizePointSentence(p)}`).join("\n");
+}
+
+/* ── EXPECTED ─────────────────────────────── */
+function buildExpected(title,raw){
+  const type=getType(raw+"\n"+title);
+  switch(type){
+    case "reward":   return "보상 아이콘, 수량, 결과 화면, 실제 획득 결과가 수정 기준과 동일하게 노출 및 지급되어야 합니다.";
+    case "skill":    return "스킬은 지정 조건에서 정상 발동되어야 하며, 취소/연계 시 쿨타임과 상태값이 비정상 적용되지 않아야 합니다.";
+    case "tooltip":  return "툴팁과 안내 문구가 수정 기준과 동일하게 노출되어야 하며, 오탈자·어색한 표현·잘못된 조건 문구가 없어야 합니다.";
+    case "movement": return "지정 위치 및 주변 이동 시 캐릭터가 멈추거나 끼이지 않고 정상 이동되어야 합니다.";
+    case "object":   return "잘못 배치된 오브젝트가 더 이상 노출되지 않아야 하며, 주변 지형/충돌/이동에 영향이 없어야 합니다.";
+    case "effect":   return "이펙트가 대상 위치에 맞게 자연스럽게 노출되어야 하며, 어긋남·겹침·잔상 현상이 없어야 합니다.";
+    case "create":   return "생성/제작 결과에 맞는 UI만 정상 노출되어야 하며, 잘못된 결과 UI 또는 불일치 결과가 노출되지 않아야 합니다.";
+    case "locale":   return "각 언어 환경에서 텍스트가 UI 영역을 벗어나거나 겹치지 않고 정상 노출되어야 합니다.";
+    case "ui":       return "대상 UI가 지정된 위치와 크기로 정상 노출되어야 하며, 겹침·잘림·영역 침범·비정상 잔상이 없어야 합니다.";
+    default:         return "수정된 내용이 요청 기준대로 정상 반영되어야 하며, 동일 이슈가 재현되지 않아야 합니다.";
+  }
+}
+
+/* ── ANALYZE ──────────────────────────────── */
+function analyze(){
+  const input=$("workInput").value;
+  if(!normalizeText(input)){toast("내용을 입력해주세요","⚠️");return;}
+  const btn=$("analyzeBtn");
+  btn.classList.add("loading");
+  setTimeout(()=>{
+    try{
+      const issues=splitIssues(input);
+      tcRows=issues.map(issue=>{
+        const raw=getRaw(issue);
+        const title=extractTitle(issue);
+        const type=getType(raw+"\n"+title);
+        return{
+          "일감":issue.id,
+          "요약":makeBaseTitle(title),
+          "타입":type,
+          "상세 설명 1":buildDetail1(title,raw),
+          "상세 설명 2":buildDetail2(title,raw),
+          "기대결과":buildExpected(title,raw)
+        };
+      });
+      render();
+      toast(`${tcRows.length}건 정리 완료`,"✅");
+      setTimeout(()=>$("resultCard").scrollIntoView({behavior:"smooth",block:"start"}),100);
+    }catch(e){
+      toast("분석 중 오류가 발생했습니다","❌");
+      console.error(e);
+    }finally{
+      btn.classList.remove("loading");
+    }
+  },320);
+}
+
+/* ── RENDER ───────────────────────────────── */
+function render(){
+  $("emptyBox").classList.add("hidden");
+  $("resultBox").classList.remove("hidden");
+  $("countBadge").textContent=`${tcRows.length}건`;
+  const body=$("resultBody");
+  body.innerHTML="";
+
+  tcRows.forEach((r,i)=>{
+    const type=r["타입"]||"general";
+    const typeLabel=TYPE_LABELS[type]||"📌 일반";
+    const item=document.createElement("article");
+    item.className="tc-item";
+    item.style.animationDelay=`${Math.min(i*0.05,0.4)}s`;
+    item.innerHTML=`
+      <div class="tc-item-head">
+        <span class="issue-id">${escapeHtml(r["일감"])}</span>
+        ${r["요약"] ? `<span class="tc-summary">${escapeHtml(r["요약"])}</span>` : ""}
+        <span class="type-badge type-${escapeHtml(type)}">${typeLabel}</span>
+      </div>
+      <div class="tc-item-body">
+        <div class="tc-field">
+          <div class="tc-field-head">
+            <span class="tc-field-title">상세 설명 1</span>
+            <button class="tc-field-copy" data-text="${escapeHtml(r["상세 설명 1"])}" title="복사">📋</button>
+          </div>
+          <div class="tc-field-body">${escapeHtml(r["상세 설명 1"])}</div>
+        </div>
+        <div class="tc-field">
+          <div class="tc-field-head">
+            <span class="tc-field-title">상세 설명 2</span>
+            <button class="tc-field-copy" data-text="${escapeHtml(r["상세 설명 2"])}" title="복사">📋</button>
+          </div>
+          <div class="tc-field-body">${escapeHtml(r["상세 설명 2"])}</div>
+        </div>
+        <div class="tc-field">
+          <div class="tc-field-head">
+            <span class="tc-field-title">기대결과</span>
+            <button class="tc-field-copy" data-text="${escapeHtml(r["기대결과"])}" title="복사">📋</button>
+          </div>
+          <div class="tc-field-body">${escapeHtml(r["기대결과"])}</div>
+        </div>
+      </div>
+      <div class="tc-item-foot">
+        <button class="btn btn-sm" data-copy-row="${i}">📋 이 행 복사</button>
+      </div>
+    `;
+    body.appendChild(item);
+  });
+
+  body.querySelectorAll(".tc-field-copy").forEach(btn=>{
+    btn.addEventListener("click",e=>{copyText(e.currentTarget.dataset.text,"필드 복사 완료");});
+  });
+  body.querySelectorAll("[data-copy-row]").forEach(btn=>{
+    btn.addEventListener("click",e=>{copyRow(Number(e.currentTarget.dataset.copyRow));});
+  });
+
+  $("rawJson").textContent=JSON.stringify(tcRows,null,2);
+}
+
+/* ── COPY / TSV ───────────────────────────── */
+function toTsv(rows,includeHeader=false){
+  const data=rows.map(r=>headers.map(h=>String(r[h]||"").replace(/\n/g," ").replace(/\t/g," ")).join("\t"));
+  return (includeHeader ? [headers.join("\t")] : []).concat(data).join("\n");
+}
+function copyText(text,msg){
+  navigator.clipboard.writeText(text).then(()=>toast(msg,"📋"))
+    .catch(()=>toast("클립보드 접근 실패","❌"));
+}
+function copyRow(i){copyText(toTsv([tcRows[i]],false),"행 복사 완료");}
+
+/* ── CLEAR ────────────────────────────────── */
+function clearAll(){
+  tcRows=[];
+  $("workInput").value="";
+  updateCharCount();
+  $("resultBox").classList.add("hidden");
+  $("emptyBox").classList.remove("hidden");
+  $("countBadge").textContent="0건";
+  $("jsonViewer").classList.remove("on");
+  $("jsonBtn").textContent="{·} JSON 보기";
+  toast("초기화 완료","🧹");
+}
+
+/* ── CHAR COUNT ───────────────────────────── */
+function updateCharCount(){
+  const ta=$("workInput");
+  const len=ta.value.length;
+  const txt=len>0 ? `${len.toLocaleString()}자` : "0자";
+  $("charCountBadge").textContent=txt;
+  $("charCountInner").textContent=txt;
+  $("inputNote").classList.toggle("hidden",len===0);
+  ta.classList.toggle("centered",len===0);
+}
+
+/* ── TOAST ────────────────────────────────── */
+let toastTimer;
+function toast(msg,icon="✓"){
+  $("toastMsg").textContent=msg;
+  $("toastIcon").textContent=icon;
+  const el=$("toast");
+  el.classList.remove("on");
+  void el.offsetWidth;
+  el.classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove("on"),2000);
+}
+
+/* ── EVENTS ───────────────────────────────── */
+$("workInput").addEventListener("input",updateCharCount);
+$("analyzeBtn").addEventListener("click",analyze);
+$("clearBtn").addEventListener("click",clearAll);
+$("titleResetBtn").addEventListener("click",clearAll);
+$("titleResetBtn").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" ")clearAll();});
+$("copyTsvBtn").addEventListener("click",()=>{
+  if(!tcRows.length){toast("결과가 없습니다","⚠️");return;}
+  copyText(toTsv(tcRows,false),"결과 TSV 복사 완료");
+});
+$("copyHeaderTsvBtn").addEventListener("click",()=>{
+  if(!tcRows.length){toast("결과가 없습니다","⚠️");return;}
+  copyText(toTsv(tcRows,true),"헤더 포함 TSV 복사 완료");
+});
+$("jsonBtn").addEventListener("click",()=>{
+  const on=$("jsonViewer").classList.toggle("on");
+  $("jsonBtn").textContent=on ? "{·} JSON 닫기" : "{·} JSON 보기";
+});
+$("copyJsonBtn").addEventListener("click",()=>{
+  copyText($("rawJson").textContent,"JSON 복사 완료");
+});
+document.addEventListener("keydown",e=>{
+  if(e.ctrlKey&&e.key==="Enter"){e.preventDefault();analyze();}
+});
+
+updateCharCount();
+</script>
+</body>
+</html>
