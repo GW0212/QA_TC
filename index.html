@@ -535,7 +535,7 @@ function isExcludedQaMetaLine(line){
   const t=cleanCell(line);
   if(!t) return true;
   return /\[\s*[^\]]*(테스트\s*환경|Test\s*Environment|재현\s*빈도|Occurrence\s*Frequency)[^\]]*\]/i.test(t)
-    || /^(기기|Device|운영체제|운영체재|Operating\s*System|발생|Occurrence)(?:\s*\([^)]*\))?\s*[:：]/i.test(t)
+    || /^(기기|Device|운영체제|운영체재|Operating\s*System|빌드|Build|게임\s*버전|Game\s*Version|QA\s*빌드|버전|발생|Occurrence)(?:\s*\([^)]*\))?\s*[:：]/i.test(t)
     || /^\d+\/\d+\s*\(?\d{1,3}%\)?$/i.test(t)
     || /^발생\s*\(?Occurrence\)?/i.test(t)
     || (/QA\s*\d+\.\d+/i.test(t)&&/빌드|Build/i.test(t))
@@ -1155,11 +1155,12 @@ function saveAsImage(index){
     });
 
     /* ── 저장 / 공유 ── */
+    const isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     cv.toBlob(async(blob)=>{
       if(!blob){toast("이미지 생성 실패","❌");return;}
 
-      /* ① Web Share API (iOS·Android) → 사진 앱·갤러리로 공유 */
-      if(navigator.canShare){
+      if(isMobile&&navigator.canShare){
+        /* 모바일: Web Share API → 사진 앱·갤러리로 공유 */
         const file=new File([blob],"QA_TC.png",{type:"image/png"});
         if(navigator.canShare({files:[file]})){
           try{
@@ -1167,13 +1168,12 @@ function saveAsImage(index){
             toast("이미지 공유 완료","🖼️");
             return;
           }catch(e){
-            if(e.name==="AbortError")return; /* 사용자 취소 */
-            /* 공유 실패 시 다운로드로 폴백 */
+            if(e.name==="AbortError")return;
           }
         }
       }
 
-      /* ② 데스크톱 / Web Share 미지원 → Blob URL 다운로드 */
+      /* PC (또는 Web Share 미지원): 다운로드 폴더에 바로 저장 */
       const url=URL.createObjectURL(blob);
       const a=document.createElement("a");
       a.href=url;a.download="QA_TC.png";
