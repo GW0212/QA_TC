@@ -8,7 +8,6 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net"/>
 <link rel="stylesheet" as="style" crossorigin
   href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.min.css"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 /* ─── RESET ─────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -218,17 +217,35 @@ kbd{background:var(--kbd-bg);border:1px solid var(--border2);border-radius:6px;p
   transition:box-shadow .22s,border-color .22s,background .3s;animation:fadeUp .3s ease both;
 }
 .tc-item:hover{box-shadow:var(--shadow);border-color:rgba(79,70,229,.18)}
+
+/* TC 헤더: 배지(위) + 제목(아래) 2행 */
 .tc-item-head{
-  display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;
-  padding:12px 16px;background:var(--tc-head-bg);border-bottom:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:14px 16px;background:var(--tc-head-bg);border-bottom:1px solid var(--border);
   transition:background .3s,border-color .3s;
+}
+.tc-head-top{
+  display:flex;align-items:center;justify-content:center;
+  gap:8px;flex-wrap:wrap;min-height:0;
+}
+.tc-head-top:empty{display:none}
+.tc-head-title{
+  font-size:13.5px;font-weight:700;color:var(--text);
+  text-align:center;line-height:1.6;word-break:keep-all;
+  white-space:normal;transition:color .3s;width:100%;padding:0 4px;
 }
 .issue-id{
   display:inline-flex;align-items:center;background:var(--grad-primary);color:#fff;
   border-radius:999px;padding:5px 14px;font-size:12px;font-weight:900;letter-spacing:.3px;
   box-shadow:0 4px 12px rgba(79,70,229,.25);white-space:nowrap;flex-shrink:0;
 }
-.tc-summary{font-size:13px;font-weight:700;color:var(--text2);line-height:1.4;word-break:keep-all;transition:color .3s;text-align:center;}
+.game-version{
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.28);
+  color:#047857;border-radius:999px;padding:4px 12px;
+  font-size:11.5px;font-weight:700;white-space:nowrap;flex-shrink:0;
+}
+[data-theme="dark"] .game-version{background:rgba(16,185,129,.18);border-color:rgba(16,185,129,.4);color:#34d399;}
 
 /* ─── TC BODY: 2×2 GRID ──────────────────────── */
 .tc-item-body{display:grid;grid-template-columns:1fr 1fr;gap:0}
@@ -261,16 +278,21 @@ kbd{background:var(--kbd-bg);border:1px solid var(--border2);border-radius:6px;p
 
 /* ─── TOAST ──────────────────────────────────── */
 .toast{
-  position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));right:18px;z-index:9999;
+  position:fixed;top:50%;left:50%;z-index:9999;
   background:var(--toast-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  color:var(--toast-text);padding:12px 18px 12px 14px;border-radius:14px;
-  box-shadow:0 16px 48px rgba(0,0,0,.22),0 4px 12px rgba(0,0,0,.14);
-  border:1px solid rgba(255,255,255,.1);font-size:13.5px;font-weight:700;
-  display:flex;align-items:center;gap:9px;opacity:0;transform:translateY(12px) scale(.95);pointer-events:none;
-  transition:all .28s cubic-bezier(.34,1.56,.64,1),background .3s,color .3s;max-width:280px;
+  color:var(--toast-text);padding:14px 22px 14px 16px;
+  border-radius:16px;
+  box-shadow:0 20px 60px rgba(0,0,0,.25),0 6px 16px rgba(0,0,0,.15);
+  border:1px solid rgba(255,255,255,.12);font-size:14px;font-weight:700;
+  display:flex;align-items:center;gap:10px;
+  opacity:0;transform:translate(-50%,-50%) scale(.82);pointer-events:none;
+  transition:opacity .28s cubic-bezier(.34,1.56,.64,1),
+             transform .28s cubic-bezier(.34,1.56,.64,1),
+             background .3s,color .3s;
+  white-space:nowrap;
 }
-.toast.on{opacity:1;transform:translateY(0) scale(1)}
-.toast-icon{font-size:16px;flex-shrink:0}
+.toast.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.toast-icon{font-size:17px;flex-shrink:0}
 
 /* ─── DARK MODE DISTINCTION ──────────────────── */
 [data-theme="dark"] .card{border:1px solid #4a5680;box-shadow:0 4px 24px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.05)}
@@ -297,7 +319,7 @@ kbd{background:var(--kbd-bg);border:1px solid var(--border2);border-radius:6px;p
 
 /* ─── 768px ──────────────────────────────────── */
 @media(max-width:768px){
-  .wrap{padding:16px 14px calc(64px + env(safe-area-inset-bottom))}
+  .wrap{padding:14px 12px calc(60px + env(safe-area-inset-bottom))}
   .header{padding:22px 16px 18px;border-radius:20px;margin-bottom:14px}
   .header-title{font-size:24px}
   .header-sub{font-size:12.5px;margin-bottom:12px}
@@ -305,50 +327,68 @@ kbd{background:var(--kbd-bg);border:1px solid var(--border2);border-radius:6px;p
   .guide-grid{grid-template-columns:1fr 1fr;gap:8px}
   .guide-card{padding:12px 10px;border-radius:12px}
   .guide-icon{font-size:18px;margin-bottom:6px}
-  .guide-title{font-size:12px}.guide-desc{font-size:11px}
-  /* 모바일: 4필드 1열 */
+  .guide-title{font-size:12px}
+  .guide-desc{font-size:11px}
+  /* 4필드 1열로 전환 */
   .tc-item-body{grid-template-columns:1fr}
-  .tc-field{border-right:none;border-bottom:1px solid var(--border)}
-  .tc-field:nth-child(2n){border-right:none}
-  .tc-field:nth-child(3),.tc-field:nth-child(4){border-bottom:1px solid var(--border)}
-  .tc-field:last-child{border-bottom:none}
-  [data-theme="dark"] .tc-field{border-right:none;border-bottom:1px solid #4a5680}
-  [data-theme="dark"] .tc-field:nth-child(2n){border-right:none}
-  [data-theme="dark"] .tc-field:nth-child(3),[data-theme="dark"] .tc-field:nth-child(4){border-bottom:1px solid #4a5680}
-  [data-theme="dark"] .tc-field:last-child{border-bottom:none}
-  .tc-item-head{gap:8px}
-  .card-body{padding:14px}.card-head{padding:11px 14px}.card-head h2{font-size:14px}
-  .card-head-right{right:14px}.result-list{padding:14px}.sections{gap:12px}
+  .tc-field{border-right:none !important;border-bottom:1px solid var(--border) !important}
+  .tc-field:last-child{border-bottom:none !important}
+  [data-theme="dark"] .tc-field{border-bottom:1px solid #4a5680 !important}
+  [data-theme="dark"] .tc-field:last-child{border-bottom:none !important}
+  .tc-item-head{padding:12px 14px}
+  .tc-head-title{font-size:13px}
+  .card-body{padding:14px}
+  .card-head{padding:11px 14px}
+  .card-head h2{font-size:14px}
+  .card-head-right{right:14px}
+  .result-list{padding:14px;gap:14px}
+  .sections{gap:12px}
   .input-textarea::placeholder{font-size:12.5px}
 }
 
 /* ─── 480px ──────────────────────────────────── */
 @media(max-width:480px){
-  .wrap{padding:10px 10px calc(60px + env(safe-area-inset-bottom))}
+  .wrap{padding:10px 10px calc(56px + env(safe-area-inset-bottom))}
   .header{padding:18px 14px 16px;border-radius:16px}
-  .header-title{font-size:22px}.header-sub{font-size:12px;margin-bottom:10px}
+  .header-title{font-size:22px}
+  .header-sub{font-size:12px;margin-bottom:10px}
   .header-logo{width:44px;height:44px;border-radius:11px;margin-bottom:8px}
   .kbd-row{display:none}
-  .guide-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .guide-grid{grid-template-columns:1fr 1fr;gap:7px}
   .guide-card{padding:10px 8px;border-radius:11px}
   .guide-icon{font-size:16px;margin-bottom:5px}
-  .guide-title{font-size:11.5px}.guide-desc{font-size:10.5px;line-height:1.4}
-  .btn-row{flex-direction:column;align-items:stretch}
+  .guide-title{font-size:11.5px}
+  .guide-desc{font-size:10.5px;line-height:1.4}
+  /* 버튼 전체 너비 */
+  .btn-row{flex-direction:column;align-items:stretch;gap:8px}
   .btn-row .btn{width:100%;justify-content:center}
-  .card-body{padding:12px}.card-head{padding:10px 12px}.card-head h2{font-size:13.5px}
+  .card-body{padding:12px}
+  .card-head{padding:10px 12px}
+  .card-head h2{font-size:13.5px}
+  .card-head-right{right:12px}
   .input-textarea{min-height:140px;font-size:15px}
   .input-textarea::placeholder{font-size:12px;line-height:1.6}
   .tc-field-body{font-size:12.5px;padding:10px 12px}
-  .result-list{padding:10px}
-  .toast{left:50%;right:auto;transform:translateX(-50%) translateY(12px) scale(.95)}
-  .toast.on{transform:translateX(-50%) translateY(0) scale(1)}
+  .tc-field-head{padding:7px 12px}
+  .tc-field-title{font-size:10.5px}
+  .btn-copy-field{height:26px;font-size:10.5px;padding:0 8px}
+  .tc-head-title{font-size:12.5px}
+  .issue-id{font-size:11.5px;padding:4px 12px}
+  .game-version{font-size:11px;padding:3px 10px}
+  .result-list{padding:10px;gap:12px}
+  .tc-item-foot{padding:8px 12px}
+  .btn-save-img{font-size:11.5px;height:32px;padding:0 12px}
+  .sections{gap:10px}
 }
 
 /* ─── 360px ──────────────────────────────────── */
 @media(max-width:360px){
+  .wrap{padding:8px 8px calc(52px + env(safe-area-inset-bottom))}
   .header-title{font-size:20px}
   .card-head h2{font-size:13px}
-  .issue-id{font-size:11px;padding:4px 11px}
+  .issue-id{font-size:11px;padding:4px 10px}
+  .game-version{font-size:10.5px;padding:3px 9px}
+  .guide-grid{grid-template-columns:1fr 1fr;gap:6px}
 }
 </style>
 </head>
@@ -495,11 +535,16 @@ function isExcludedQaMetaLine(line){
   const t=cleanCell(line);
   if(!t) return true;
   return /\[\s*[^\]]*(테스트\s*환경|Test\s*Environment|재현\s*빈도|Occurrence\s*Frequency)[^\]]*\]/i.test(t)
-    || /^(기기|Device|운영체제|Operating\s*System|빌드|Build|발생|Occurrence)(?:\s*\([^)]*\))?\s*[:：]/i.test(t)
+    || /^(기기|Device|운영체제|운영체재|Operating\s*System|발생|Occurrence)(?:\s*\([^)]*\))?\s*[:：]/i.test(t)
     || /^\d+\/\d+\s*\(?\d{1,3}%\)?$/i.test(t)
     || /^발생\s*\(?Occurrence\)?/i.test(t)
     || (/QA\s*\d+\.\d+/i.test(t)&&/빌드|Build/i.test(t))
-    || (/Windows|Android|iOS|PC\s*$/i.test(t)&&/^(기기|운영체제|빌드|Device|Operating|Build)/i.test(t));
+    || (/Windows|Android|iOS|PC\s*$/i.test(t)&&/^(기기|운영체제|운영체재|빌드|Device|Operating|Build)/i.test(t));
+}
+/* OS·환경 메타 문장 감지 (제목·상세설명에서 제외) */
+function looksLikeOsMeta(v){
+  return /(?:운영체제|운영체재|Operating\s*System|OS)\s*[:：\(]/i.test(v)
+    || /(?:Windows|윈도우|Android|iOS|macOS|Mac\s*OS)\s*\d*/i.test(v)&&/[:：]/.test(v);
 }
 function stripExcludedSections(raw){
   let text=raw||"";
@@ -534,6 +579,14 @@ function normalizePointSentence(v){
   return `${t} 여부를 확인합니다.`;
 }
 
+/* ── 게임 버전 추출 ───────────────────────────── */
+function extractGameVersion(raw){
+  const lines=(raw||"").split("\n").map(cleanCell).filter(Boolean);
+  const vline=lines.find(l=>/^(?:빌드|Build|게임\s*버전|Game\s*Version|QA\s*빌드|버전)(?:\s*\([^)]*\))?\s*[:：]/i.test(l));
+  if(vline){const m=vline.match(/[:：]\s*(.+)/);return m?cleanCell(m[1]):null;}
+  return null;
+}
+
 /* ── ISSUE PARSING ───────────────────────── */
 function splitIssues(input){
   const text=normalizeText(input);
@@ -557,7 +610,9 @@ function findSection(raw,names){
   const esc=names.map(n=>n.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|');
   const re=new RegExp('\\[\\s*[^\\]]*(?:'+esc+')[^\\]]*\\]([\\s\\S]*?)(?=(?:\\n|\\s)\\s*\\[[^\\]]+\\]|$)','i');
   const m=text.match(re);
-  return m ? cleanCell(m[1]) : "";
+  if(!m) return "";
+  /* 줄바꿈 유지 버전 반환 */
+  return m[1].split("\n").map(l=>cleanCell(l)).filter(Boolean).join("\n");
 }
 function extractTitle(issue){
   const cleaned=getCleanRaw(issue);
@@ -565,10 +620,10 @@ function extractTitle(issue){
   const splitByCell=first.includes("\t")?first.split("\t"):first.split(/\s{2,}/);
   let cells=splitByCell
     .map(v=>cleanCell(v.replace(issue.id,"")))
-    .filter(v=>!looksLikeNoise(v)&&!isExcludedQaMetaLine(v)&&!isSectionHeadingLine(v))
+    .filter(v=>!looksLikeNoise(v)&&!isExcludedQaMetaLine(v)&&!isSectionHeadingLine(v)&&!looksLikeOsMeta(v))
     .filter(v=>!/\[(테스트\s*환경|Test\s*Environment|재현\s*빈도|Occurrence\s*Frequency)\]/i.test(v))
     .filter(v=>v.length>=4&&!/^https?:\/\//i.test(v))
-    .filter(v=>!looksLikeExpected(v)); /* 기대결과 형식 문장 제외 */
+    .filter(v=>!looksLikeExpected(v));
   const score=v=>{
     let s=0;
     if(/[가-힣]/.test(v)) s+=5;
@@ -581,10 +636,10 @@ function extractTitle(issue){
   if(cells.length) return cells.sort((a,b)=>score(b)-score(a))[0];
   const pool=[...cleaned.split("\n")]
     .map(l=>cleanCell(l.replace(issue.id,"")))
-    .filter(v=>v&&!looksLikeNoise(v)&&!isExcludedQaMetaLine(v)&&!isSectionHeadingLine(v))
+    .filter(v=>v&&!looksLikeNoise(v)&&!isExcludedQaMetaLine(v)&&!isSectionHeadingLine(v)&&!looksLikeOsMeta(v))
     .filter(v=>!looksLikeExpected(v))
     .filter(v=>!/\[\s*[^\]]*(상세\s*내용|Detailed\s*Description|기대\s*결과|Expected\s*Result|재현\s*스텝|Step\s*&\s*Action)[^\]]*\]/i.test(v));
-  return trimSentence(pool.find(v=>v.length>=8&&v.length<120)||pool[0]||"대상 일감",65);
+  return pool.find(v=>v.length>=8&&v.length<400)||pool[0]||"대상 일감";
 }
 function getRaw(issue){return getCleanRaw(issue);}
 function has(raw,re){return re.test(raw);}
@@ -619,32 +674,46 @@ function extractExpectedFromRaw(raw, title){
   return null;
 }
 
+/* ── 긴 상세 설명 줄 바꿈 처리 ───────────────── */
+function formatDetailLines(text){
+  if(!text) return text;
+  /* 이미 \n 포함된 멀티라인 → 그대로 유지, 각 줄만 정리 */
+  const lines=text.split("\n").map(l=>l.trim()).filter(Boolean);
+  if(lines.length>1) return lines.join("\n");
+  /* 단일 긴 문장 → 마침표/다 뒤에서 줄 바꿈 */
+  return text
+    .replace(/([합있됩않없어야]니다\.)\s+(?=\S)/g,"$1\n")
+    .replace(/(있습니다\.)\s+(?=\S)/g,"$1\n")
+    .replace(/(됩니다\.)\s+(?=\S)/g,"$1\n")
+    .trim();
+}
+
 /* ── DETAIL 1 ────────────────────────────── */
 function buildDetail1(title,raw){
+  const clean=stripExcludedSections(raw);
+  /* 1) [상세 내용] 섹션 → 정리 후 줄 바꿈 */
+  const detailSec=findSection(clean,["상세 내용","Detailed Description","상세내용","상세 설명"]);
+  if(detailSec&&detailSec.length>10){
+    const lines=detailSec.split("\n")
+      .map(l=>cleanCell(l))
+      .filter(l=>l&&!looksLikeNoise(l)&&!looksLikeOsMeta(l)&&!isExcludedQaMetaLine(l)&&!looksLikeExpected(l));
+    if(lines.length>0) return formatDetailLines(lines.join("\n"));
+  }
+  /* 2) 섹션 없으면 타입 기반 생성 */
   const type=getType(raw+"\n"+title);
   const base=makeBaseTitle(title);
   const lbl=targetLabel(base);
   switch(type){
-    case "reward":
-      return `${targetLabel(base,"대상 보상 항목")} 보상 UI(아이콘·수량·설명)와 실제 획득 결과가 수정 기준과 정확히 일치하는지 확인합니다.`;
-    case "skill":
-      return `${targetLabel(base,"대상 스킬")} 단독 사용·연계·취소 각 상황에서 발동 상태, 쿨타임 처리, 상태값이 정상 적용되는지 확인합니다.`;
-    case "tooltip":
-      return `${lbl} 툴팁 및 안내 문구가 수정된 기준 텍스트와 동일하게 노출되는지, 오탈자·어색한 표현·잘못된 조건 문구가 없는지 확인합니다.`;
-    case "movement":
-      return `${lbl} 지정 경로 및 해당 구간에서 캐릭터 이동·순간이동·진입 시도 시 멈춤·끼임·비정상 이동이 발생하지 않는지 확인합니다.`;
-    case "object":
-      return `${targetLabel(base,"지정 지역")} 내 잘못 배치된 오브젝트가 완전히 제거되었는지, 주변 지형·충돌·이동에 부가 영향이 없는지 확인합니다.`;
-    case "effect":
-      return `${lbl} 이펙트가 대상 위치에 정확히 출력되는지, 위치 어긋남·크기 오류·잔상·겹침 현상이 없는지 확인합니다.`;
-    case "create":
-      return `${lbl} 생성/제작 시 각 결과 조건(성공·실패·대성공)에 맞는 결과 UI와 실제 아이템이 정상 처리되는지 확인합니다.`;
-    case "locale":
-      return `${lbl} 각 언어 환경에서 텍스트가 UI 영역을 벗어나거나 겹침·잘림 없이 정상 노출되는지 확인합니다.`;
-    case "ui":
-      return `${lbl} UI 요소(텍스트·버튼·아이콘·영역)가 지정 위치와 크기로 노출되는지, 겹침·잘림·영역 침범·비정상 잔상이 없는지 확인합니다.`;
-    default:
-      return `${base}에 기재된 수정·확인 요청 사항이 정상 반영되었는지, 관련 기능 전반에 부가 이상이 없는지 확인합니다.`;
+    case "reward":   return `${targetLabel(base,"대상 보상 항목")} 보상 UI(아이콘·수량·설명)와 실제 획득 결과가\n수정 기준과 정확히 일치하는지 확인합니다.`;
+    case "skill":    return `${targetLabel(base,"대상 스킬")} 단독 사용·연계·취소 각 상황에서\n발동 상태, 쿨타임 처리, 상태값이 정상 적용되는지 확인합니다.`;
+    case "tooltip":  return `${lbl} 툴팁 및 안내 문구가 수정된 기준 텍스트와 동일하게 노출되는지,\n오탈자·어색한 표현·잘못된 조건 문구가 없는지 확인합니다.`;
+    case "movement": return `${lbl} 지정 경로 및 해당 구간에서 이동·순간이동·진입 시도 시\n멈춤·끼임·비정상 이동이 발생하지 않는지 확인합니다.`;
+    case "object":   return `${targetLabel(base,"지정 지역")} 내 잘못 배치된 오브젝트가 완전히 제거되었는지,\n주변 지형·충돌·이동에 부가 영향이 없는지 확인합니다.`;
+    case "effect":   return `${lbl} 이펙트가 대상 위치에 정확히 출력되는지,\n위치 어긋남·크기 오류·잔상·겹침 현상이 없는지 확인합니다.`;
+    case "create":   return `${lbl} 생성/제작 시 각 결과 조건(성공·실패·대성공)에 맞는\n결과 UI와 실제 아이템이 정상 처리되는지 확인합니다.`;
+    case "locale":   return `${lbl} 각 언어 환경에서 텍스트가 UI 영역을\n벗어나거나 겹침·잘림 없이 정상 노출되는지 확인합니다.`;
+    case "ui":       return `${lbl} UI 요소(텍스트·버튼·아이콘·영역)가 지정 위치와 크기로 노출되는지,\n겹침·잘림·영역 침범·비정상 잔상이 없는지 확인합니다.`;
+    default:         return `${base}에 기재된 수정·확인 요청 사항이 정상 반영되었는지,\n관련 기능 전반에 부가 이상이 없는지 확인합니다.`;
   }
 }
 
@@ -706,7 +775,7 @@ function buildDetail2(title,raw){
       points.push("해당 기능과 연관된 인접 기능도 함께 동작하는지 확인합니다.");
   }
   const result=unique(points).filter(Boolean).slice(0,4);
-  if(result.length===1) return normalizePointSentence(result[0]);
+  if(result.length===1) return formatDetailLines(normalizePointSentence(result[0]));
   return result.map((p,i)=>`${i+1}. ${normalizePointSentence(p)}`).join("\n");
 }
 
@@ -714,20 +783,25 @@ function buildDetail2(title,raw){
 function buildReproSteps(title,raw){
   const type=getType(raw+"\n"+title);
   const clean=stripExcludedSections(raw);
-  /* 1) [재현 스텝] 섹션 직접 추출 */
+  /* 1) [재현 스텝] 섹션 직접 추출 → 줄바꿈 유지 정리 */
   const sec=findSection(clean,["재현 스텝","Step & Action","재현 방법","재현 절차","Steps to Reproduce"]);
   if(sec&&sec.length>10){
-    const stepLines=sec.split("\n").map(cleanCell).filter(Boolean);
-    if(stepLines.length>=2){
-      return stepLines.slice(0,6).map((l,i)=>`${i+1}. ${l.replace(/^\d+[\.\)]\s*/,"")}`).join("\n");
+    const stepLines=sec.split("\n").map(cleanCell).filter(Boolean)
+      .filter(l=>!looksLikeNoise(l)&&!isExcludedQaMetaLine(l)&&!looksLikeOsMeta(l));
+    if(stepLines.length>=1){
+      return stepLines
+        .map((l,i)=>`${i+1}. ${l.replace(/^\d+[\.\)\-\s]+/,"").trim()}`)
+        .join("\n");
     }
   }
-  /* 2) 원문에서 번호 매긴 라인 추출 */
+  /* 2) 원문 전체에서 번호 붙은 스텝 라인 수집 */
   const allLines=clean.split("\n").map(cleanCell).filter(Boolean)
-    .filter(l=>!isExcludedQaMetaLine(l)&&!looksLikeNoise(l)&&!looksLikeExpected(l));
+    .filter(l=>!isExcludedQaMetaLine(l)&&!looksLikeNoise(l)&&!looksLikeExpected(l)&&!looksLikeOsMeta(l));
   const numbered=allLines.filter(l=>/^\d+[\.\)]\s.{5,}/.test(l));
   if(numbered.length>=2){
-    return numbered.slice(0,5).map((l,i)=>`${i+1}. ${cleanCell(l.replace(/^\d+[\.\)]\s*/,""))}`).join("\n");
+    return numbered.slice(0,6)
+      .map((l,i)=>`${i+1}. ${cleanCell(l.replace(/^\d+[\.\)]\s*/,""))}`)
+      .join("\n");
   }
   /* 3) 타입별 기본 스텝 생성 */
   const hasInterServer=has(raw,/인터서버|글로벌|서버\s*이동/);
@@ -747,14 +821,14 @@ function buildReproSteps(title,raw){
     ].join("\n");
     case "tooltip": return [
       "1. 대상 UI 또는 메뉴에 진입합니다.",
-      "2. 해당 항목 위에 마우스를 올리거나(또는 터치) 툴팁을 호출합니다.",
+      "2. 해당 항목 위에 마우스를 올리거나 터치하여 툴팁을 호출합니다.",
       "3. 노출된 문구를 수정 기준과 비교합니다.",
       "4. 언어 설정을 변경하여 각 언어별로 반복 확인합니다."
     ].join("\n");
     case "movement": return [
-      hasInterServer ? "1. 인터서버 또는 글로벌 서버에 접속합니다." : "1. 해당 지역에 접속합니다.",
+      hasInterServer?"1. 인터서버 또는 글로벌 서버에 접속합니다.":"1. 해당 지역에 접속합니다.",
       "2. 이상 현상이 발생하는 위치 또는 구간에 접근합니다.",
-      hasInterServer ? "3. 순간이동 또는 이동 기술로 대상 지역 입장을 시도합니다." : "3. 여러 방향에서 해당 구간을 반복 이동합니다.",
+      hasInterServer?"3. 순간이동 또는 이동 기술로 대상 지역 입장을 시도합니다.":"3. 여러 방향에서 해당 구간을 반복 이동합니다.",
       "4. 멈춤·끼임·비정상 이동·입장 차단 여부를 확인합니다.",
       "5. 일반 서버와 비교하여 동작 차이를 확인합니다."
     ].join("\n");
@@ -762,7 +836,7 @@ function buildReproSteps(title,raw){
       "1. 대상 오브젝트가 배치된 지역으로 이동합니다.",
       "2. 오브젝트 노출 여부를 다양한 카메라 각도로 확인합니다.",
       "3. 오브젝트 근처를 이동하며 충돌·이동 방해 여부를 확인합니다.",
-      "4. 오브젝트 위치 주변에서 연관 기능(상호작용 등)을 테스트합니다."
+      "4. 오브젝트 위치 주변에서 연관 기능을 테스트합니다."
     ].join("\n");
     case "effect": return [
       "1. 해당 이펙트를 발생시키는 스킬 또는 아이템을 사용합니다.",
@@ -840,12 +914,13 @@ function analyze(){
       const issues=splitIssues(input);
       tcRows=issues.map(issue=>{
         const raw=getRaw(issue);
-        const title=extractTitle(issue);
+        const title=extractTitle(issue);   /* 전체 제목 (자르지 않음) */
         const type=getType(raw+"\n"+title);
+        const version=extractGameVersion(issue.lines.join("\n"));
         return{
           "일감":issue.id,
-          "요약":makeBaseTitle(title),
-          "타입":type,
+          "버전":version,
+          "요약":title,        /* 전체 노출용 */
           "상세 설명 1":buildDetail1(title,raw),
           "상세 설명 2":buildDetail2(title,raw),
           "재현 스텝":buildReproSteps(title,raw),
@@ -874,10 +949,10 @@ function render(){
     item.className="tc-item";
     item.style.animationDelay=`${Math.min(i*0.05,0.4)}s`;
     const fields=[
-      {key:"상세 설명 1",label:"DETAIL 1"},
-      {key:"상세 설명 2",label:"DETAIL 2"},
-      {key:"재현 스텝",label:"REPRO STEPS"},
-      {key:"기대결과",label:"EXPECTED"}
+      {key:"상세 설명 1",label:"상세 설명 1"},
+      {key:"상세 설명 2",label:"상세 설명 2"},
+      {key:"재현 스텝",label:"재현 스텝"},
+      {key:"기대결과",label:"기대결과"}
     ];
     const fieldHtml=fields.map(f=>`
       <div class="tc-field">
@@ -889,8 +964,11 @@ function render(){
       </div>`).join("");
     item.innerHTML=`
       <div class="tc-item-head">
-        ${showId?`<span class="issue-id">${escapeHtml(r["일감"])}</span>`:""}
-        ${r["요약"]?`<span class="tc-summary">${escapeHtml(r["요약"])}</span>`:""}
+        <div class="tc-head-top">
+          ${showId?`<span class="issue-id">${escapeHtml(r["일감"])}</span>`:""}
+          ${r["버전"]?`<span class="game-version">🎮 빌드 : ${escapeHtml(r["버전"])}</span>`:""}
+        </div>
+        ${r["요약"]&&r["요약"]!=="대상 일감"?`<div class="tc-head-title">${escapeHtml(r["요약"])}</div>`:""}
       </div>
       <div class="tc-item-body">${fieldHtml}</div>
       <div class="tc-item-foot">
@@ -920,28 +998,171 @@ function fallbackCopy(text,msg){
   document.body.removeChild(ta);
 }
 
-/* ── IMAGE SAVE ──────────────────────────── */
-async function saveAsImage(index){
-  const items=document.querySelectorAll(".tc-item");
-  const item=items[index];
-  if(!item){toast("항목을 찾을 수 없습니다","❌");return;}
+/* ── IMAGE SAVE (Pure Canvas 2D) ─────────────── */
+function saveAsImage(index){
+  const r=tcRows[index];
+  if(!r){toast("항목을 찾을 수 없습니다","❌");return;}
   toast("이미지 생성 중…","⏳");
-  const dark=document.documentElement.getAttribute("data-theme")==="dark";
-  const bg=dark?"#242b3d":"#ffffff";
   try{
-    const canvas=await html2canvas(item,{
-      scale:2,backgroundColor:bg,useCORS:true,logging:false,
-      onclone:(doc)=>{
-        /* 캡처 시 애니메이션 제거 */
-        doc.querySelectorAll(".tc-item").forEach(el=>el.style.animation="none");
+    const dark=document.documentElement.getAttribute("data-theme")==="dark";
+    const SC=2, W=1160, PAD=20;
+    const FONT=`"Apple SD Gothic Neo","Noto Sans KR",-apple-system,sans-serif`;
+    const C=dark?{
+      page:"#1a1f2e",card:"#242b3d",head:"#1e2438",
+      bdr:"#4a5680",text:"#f0f4ff",text2:"#d8e0f5",
+      muted:"#a0aece",vbg:"rgba(16,185,129,.2)",vc:"#34d399"
+    }:{
+      page:"#eef2ff",card:"#ffffff",head:"#f1f5fe",
+      bdr:"rgba(100,116,139,.25)",text:"#0f172a",text2:"#334155",
+      muted:"#94a3b8",vbg:"rgba(16,185,129,.13)",vc:"#047857"
+    };
+
+    /* ── 텍스트 래핑 ── */
+    const mc=document.createElement("canvas").getContext("2d");
+    function wrap(text,maxW,fs,bold){
+      mc.font=`${bold?"700":"400"} ${fs}px ${FONT}`;
+      const out=[];
+      for(const para of String(text||"").split("\n")){
+        if(!para.trim()){out.push("");continue;}
+        let ln="";
+        for(const ch of para){
+          if(mc.measureText(ln+ch).width>maxW&&ln){out.push(ln);ln=ch;}
+          else ln+=ch;
+        }
+        if(ln)out.push(ln);
       }
+      return out;
+    }
+
+    /* ── 레이아웃 상수 ── */
+    const FS=13,LH=21,FLH=38,FPD=15,COL=W/2;
+    const showId=r["일감"]&&!r["일감"].startsWith("수동-");
+    const KEYS=["상세 설명 1","상세 설명 2","재현 스텝","기대결과"];
+    const wrapped=KEYS.map(k=>wrap(r[k]||"",COL-FPD*2,FS,false));
+    const rowH=(i)=>Math.max(80, Math.max(wrapped[i*2].length,wrapped[i*2+1].length)*LH+FPD*2);
+    const r1H=rowH(0), r2H=rowH(1);
+    const titleLines=r["요약"]&&r["요약"]!=="대상 일감"?wrap(r["요약"],W-48,14,true):[];
+    const badgeH=(showId||r["버전"])?36:0;
+    const headH=badgeH+(titleLines.length?titleLines.length*22+8:0)+24;
+    const TOTAL_H=PAD*2+headH+FLH+r1H+FLH+r2H;
+    const TOTAL_W=W+PAD*2;
+
+    /* ── 캔버스 생성 ── */
+    const cv=document.createElement("canvas");
+    cv.width=TOTAL_W*SC; cv.height=TOTAL_H*SC;
+    const ctx=cv.getContext("2d");
+    ctx.scale(SC,SC);
+
+    /* ── 헬퍼: 둥근 사각형 ── */
+    function rr(x,y,w,h,r){
+      ctx.beginPath();
+      ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);
+      ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+      ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+      ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+      ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
+      ctx.closePath();
+    }
+
+    /* ── 페이지 배경 ── */
+    ctx.fillStyle=C.page; ctx.fillRect(0,0,TOTAL_W,TOTAL_H);
+
+    const CX=PAD,CY=PAD,CW=W,CH=TOTAL_H-PAD*2;
+
+    /* ── 카드 ── */
+    ctx.shadowColor=dark?"rgba(0,0,0,.5)":"rgba(15,23,42,.1)";
+    ctx.shadowBlur=20; ctx.shadowOffsetY=4;
+    ctx.fillStyle=C.card; rr(CX,CY,CW,CH,16); ctx.fill();
+    ctx.shadowColor="transparent"; ctx.shadowBlur=0; ctx.shadowOffsetY=0;
+    ctx.strokeStyle=C.bdr; ctx.lineWidth=1; rr(CX,CY,CW,CH,16); ctx.stroke();
+
+    /* ── 헤더 배경 ── */
+    ctx.save(); rr(CX,CY,CW,CH,16); ctx.clip();
+    ctx.fillStyle=C.head; ctx.fillRect(CX,CY,CW,headH);
+    ctx.restore();
+    ctx.strokeStyle=C.bdr; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(CX,CY+headH); ctx.lineTo(CX+CW,CY+headH); ctx.stroke();
+
+    /* ── 배지 (ID + 버전) ── */
+    let hy=CY+14;
+    if(showId||r["버전"]){
+      const badges=[];
+      if(showId) badges.push({t:r["일감"],type:"id"});
+      if(r["버전"]) badges.push({t:"🎮 빌드 : "+r["버전"],type:"ver"});
+      const bh=26;
+      mc.font=`700 12px ${FONT}`;
+      const bws=badges.map(b=>(mc.measureText(b.t).width+24));
+      const totalBW=bws.reduce((a,c)=>a+c,0)+(badges.length-1)*8;
+      let bx=CX+CW/2-totalBW/2;
+      badges.forEach((b,i)=>{
+        const bw=bws[i];
+        if(b.type==="id"){
+          const g=ctx.createLinearGradient(bx,hy,bx+bw,hy);
+          g.addColorStop(0,"#4f46e5"); g.addColorStop(1,"#0ea5e9");
+          ctx.fillStyle=g;
+        }else{
+          ctx.fillStyle=C.vbg;
+        }
+        rr(bx,hy,bw,bh,13); ctx.fill();
+        if(b.type==="ver"){
+          ctx.strokeStyle=dark?"rgba(16,185,129,.4)":"rgba(16,185,129,.3)";
+          ctx.lineWidth=1; rr(bx,hy,bw,bh,13); ctx.stroke();
+        }
+        ctx.font=`${b.type==="id"?"900":"700"} 12px ${FONT}`;
+        ctx.fillStyle=b.type==="id"?"#fff":C.vc;
+        ctx.textBaseline="middle"; ctx.textAlign="center";
+        ctx.fillText(b.t,bx+bw/2,hy+bh/2);
+        bx+=bw+8;
+      });
+      hy+=bh+10;
+    }
+
+    /* ── 제목 ── */
+    if(titleLines.length){
+      ctx.textAlign="center"; ctx.textBaseline="top";
+      ctx.font=`700 14px ${FONT}`; ctx.fillStyle=C.text;
+      titleLines.forEach((ln,i)=>ctx.fillText(ln,CX+CW/2,hy+i*22));
+    }
+    ctx.textAlign="left";
+
+    /* ── 4개 필드 ── */
+    const rows=[{keys:[0,1],y:CY+headH,h:FLH+r1H},{keys:[2,3],y:CY+headH+FLH+r1H,h:FLH+r2H}];
+    rows.forEach((row,ri)=>{
+      row.keys.forEach((ki,ci)=>{
+        const fx=CX+ci*COL, fy=row.y, fw=COL, fh=row.h;
+        /* 셀 배경 (카드 clip 적용) */
+        ctx.save(); rr(CX,CY,CW,CH,16); ctx.clip();
+        ctx.fillStyle=C.card; ctx.fillRect(fx,fy,fw,fh);
+        ctx.fillStyle=C.head; ctx.fillRect(fx,fy,fw,FLH);
+        ctx.restore();
+        /* 테두리 */
+        ctx.strokeStyle=C.bdr; ctx.lineWidth=1;
+        if(ci===0){ctx.beginPath();ctx.moveTo(fx+fw,fy);ctx.lineTo(fx+fw,fy+fh);ctx.stroke();}
+        ctx.beginPath();ctx.moveTo(fx,fy+FLH);ctx.lineTo(fx+fw,fy+FLH);ctx.stroke();
+        if(ri===0){ctx.beginPath();ctx.moveTo(fx,fy+fh);ctx.lineTo(fx+fw,fy+fh);ctx.stroke();}
+        /* 라벨 */
+        ctx.font=`800 10.5px ${FONT}`; ctx.fillStyle=C.muted;
+        ctx.textBaseline="middle"; ctx.letterSpacing="0.5px";
+        ctx.fillText(KEYS[ki].toUpperCase(),fx+FPD,fy+FLH/2);
+        ctx.letterSpacing="0px";
+        /* 본문 */
+        ctx.font=`400 ${FS}px ${FONT}`; ctx.fillStyle=C.text2;
+        ctx.textBaseline="top";
+        wrapped[ki].forEach((ln,li)=>{
+          if(ln) ctx.fillText(ln,fx+FPD,fy+FLH+FPD+li*LH);
+        });
+      });
     });
-    link.download=`QA_TC.png`;
-    link.href=canvas.toDataURL("image/png");
+
+    /* ── 다운로드 ── */
+    const link=document.createElement("a");
+    link.download="QA_TC.png";
+    link.href=cv.toDataURL("image/png");
     link.click();
     toast("이미지 저장 완료","🖼️");
   }catch(e){
-    toast("이미지 저장 실패","❌");console.error(e);
+    console.error("saveAsImage:",e);
+    toast("이미지 저장 실패","❌");
   }
 }
 
