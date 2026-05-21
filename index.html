@@ -1154,12 +1154,33 @@ function saveAsImage(index){
       });
     });
 
-    /* ── 다운로드 ── */
-    const link=document.createElement("a");
-    link.download="QA_TC.png";
-    link.href=cv.toDataURL("image/png");
-    link.click();
-    toast("이미지 저장 완료","🖼️");
+    /* ── 저장 / 공유 ── */
+    cv.toBlob(async(blob)=>{
+      if(!blob){toast("이미지 생성 실패","❌");return;}
+
+      /* ① Web Share API (iOS·Android) → 사진 앱·갤러리로 공유 */
+      if(navigator.canShare){
+        const file=new File([blob],"QA_TC.png",{type:"image/png"});
+        if(navigator.canShare({files:[file]})){
+          try{
+            await navigator.share({files:[file],title:"QA TC"});
+            toast("이미지 공유 완료","🖼️");
+            return;
+          }catch(e){
+            if(e.name==="AbortError")return; /* 사용자 취소 */
+            /* 공유 실패 시 다운로드로 폴백 */
+          }
+        }
+      }
+
+      /* ② 데스크톱 / Web Share 미지원 → Blob URL 다운로드 */
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url;a.download="QA_TC.png";
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(url),3000);
+      toast("이미지 저장 완료","🖼️");
+    },"image/png",1.0);
   }catch(e){
     console.error("saveAsImage:",e);
     toast("이미지 저장 실패","❌");
